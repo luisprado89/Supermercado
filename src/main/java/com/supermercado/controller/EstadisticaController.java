@@ -5,7 +5,10 @@ import com.supermercado.service.EstadisticaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 /**
@@ -16,12 +19,18 @@ import java.util.List;
  * el producto más vendido y obtener el ranking de productos con mayor
  * volumen de ventas.</p>
  */
+@Tag(
+        name = "Estadísticas",
+        description = "API para la consulta de estadísticas de ventas"
+)
 @RestController
 @RequestMapping("/api/estadisticas")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class EstadisticaController {
-
+    /**
+     * Servicio encargado de gestionar las estadísticas de ventas.
+     */
     private final EstadisticaService estadisticaService;
 
     /**
@@ -29,6 +38,11 @@ public class EstadisticaController {
      *
      * @return información del producto más vendido.
      */
+    @Operation(summary = "Obtener el producto más vendido")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Producto más vendido obtenido correctamente"),
+            @ApiResponse(responseCode = "400", description = "No existen ventas registradas")
+    })
     @GetMapping("/producto-mas-vendido")
     public ResponseEntity<ProductoMasVendidoResponse> findBestSellingProducto() {
         return ResponseEntity.ok(estadisticaService.findBestSellingProducto());
@@ -43,6 +57,11 @@ public class EstadisticaController {
      * @param quantity número máximo de productos a devolver.
      * @return lista ordenada de productos más vendidos.
      */
+    @Operation(summary = "Obtener el ranking de productos más vendidos")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ranking obtenido correctamente"),
+            @ApiResponse(responseCode = "400", description = "No existen ventas registradas o la cantidad solicitada no es válida")
+    })
     @GetMapping("/top-productos")
     public ResponseEntity<List<ProductoMasVendidoResponse>> findTopSellingProductos(
             @RequestParam(defaultValue = "5") int quantity) {

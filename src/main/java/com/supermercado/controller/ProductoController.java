@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 /**
@@ -19,6 +22,10 @@ import java.util.List;
  * y eliminar productos, delegando toda la lógica de negocio en
  * {@link ProductoService}.</p>
  */
+@Tag(
+        name = "Productos",
+        description = "API para la gestión de productos del supermercado"
+)
 @RestController
 @RequestMapping("/api/productos")
 @RequiredArgsConstructor
@@ -34,6 +41,10 @@ public class ProductoController {
      *
      * @return lista de productos.
      */
+    @Operation(summary = "Obtener todos los productos")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Productos obtenidos correctamente")
+    })
     @GetMapping
     public ResponseEntity<List<ProductoResponse>> findAll() {
         return ResponseEntity.ok(productoService.findAll());
@@ -45,6 +56,11 @@ public class ProductoController {
      * @param productoRequest datos del producto a registrar.
      * @return producto creado.
      */
+    @Operation(summary = "Registrar un nuevo producto")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Producto creado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada no válidos")
+    })
     @PostMapping
     public ResponseEntity<ProductoResponse> create(
             @Valid @RequestBody ProductoRequest productoRequest) {
@@ -61,6 +77,12 @@ public class ProductoController {
      * @param productoRequest nuevos datos del producto.
      * @return producto actualizado.
      */
+    @Operation(summary = "Actualizar un producto")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Producto actualizado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada no válidos"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<ProductoResponse> update(
             @PathVariable Long id,
@@ -75,6 +97,11 @@ public class ProductoController {
      * @param id identificador del producto.
      * @return respuesta sin contenido.
      */
+    @Operation(summary = "Eliminar un producto")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Producto eliminado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         productoService.delete(id);
@@ -87,6 +114,11 @@ public class ProductoController {
      * @param id identificador del producto.
      * @return producto encontrado.
      */
+    @Operation(summary = "Buscar un producto por su identificador")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Producto encontrado"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<ProductoResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(productoService.findById(id));
